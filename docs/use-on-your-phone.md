@@ -65,7 +65,7 @@ The trade-off is that your phone and laptop do not sync automatically.
 
 Realistically: pick one device as the main one. Use the phone for capture during visits, export at the end of the day, import on the laptop when comparing properly.
 
-Real sync is [`tasks/later/T-015-cloud-sync.md`](../tasks/later/T-015-cloud-sync.md) — a single row in a free Postgres, no login. Now that both devices are in use, it is the next thing worth building.
+Real sync is [`tasks/next/T-015-cloud-sync.md`](../tasks/next/T-015-cloud-sync.md) — a single row in a free Postgres, no login. Now that both devices are in use, it is the next thing worth building.
 
 ## Uploaded photos and videos don't travel in the backup
 
@@ -88,9 +88,9 @@ When a new version is deployed, the app shows *"A new version is ready"* with a 
 
 ## If the link doesn't work yet
 
-GitHub Pages takes a minute or two after the first deploy, and the workflow enables it automatically on the first run.
+Almost always the one-time switch at the top of this page. Check the **Actions** tab for a green tick on *"Test and deploy to GitHub Pages"* — a failure on the `configure-pages` step means Pages is still off.
 
-Check **Actions** in the repo for a green tick on *"Test and deploy to GitHub Pages"*. If Pages was never enabled and the automatic step was blocked, turn it on manually: **Settings → Pages → Source: GitHub Actions**, then re-run the workflow.
+After the first successful deploy, allow a minute or two for the URL to start serving.
 
 ## Running it on your laptop without the internet
 
