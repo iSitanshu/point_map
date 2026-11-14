@@ -138,7 +138,7 @@ The UI renders `₹18k–24k · 3 of 7 inputs missing` with a confidence dot (gr
 exitCost(N) = max(0, lockInMonths − N) × rent + noticeMonths × rent
 ```
 
-Shown as a single red line on any point with `lockInMonths > 3`. A 6-month lock-in at ₹26,000 left in month 3 is ₹78,000 of risk — worth one line of UI.
+Shown as a single red line on any point with `lockInMonths > 3`. A 6-month lock-in at ₹26,000 left in month 3 costs ₹1,04,000 — three unserved months plus one month's notice. Worth one line of UI.
 
 ### Totals and budget
 
@@ -158,13 +158,15 @@ budgetDelta = TMC − settings.budgetMonthly        // negative is good
 | Commute cash | 1,540 | 2,640 | 3,400 |
 | Brokerage ÷ 12 | 1,250 | 0 | 792 |
 | Setup ÷ 12 | 333 | 500 | 292 |
-| **TMC (cash lens)** | **₹18,923** | **₹38,140** | **₹14,984** |
+| **TMC (cash lens)** | **₹18,923** | **₹38,140** | **₹14,983** |
 | Deposit | 30,000 | 52,000 | 19,000 |
 | **Day-one cash** | **₹64,000** | **₹84,000** | **₹41,500** |
 | One-way commute | 25 min | 40 min | 75 min |
-| **TMC + time @ ₹150/hr** | **₹21,673** | **₹42,540** | **₹23,234** |
+| **TMC + time @ ₹150/hr** | **₹21,673** | **₹42,540** | **₹23,233** |
 
-C is ₹3,900/month cheaper on cash. Price commute time at ₹150/hr and **A wins**. And A needs ₹22,500 more on day one than C, which may be the binding constraint regardless. Three lenses, three different winners — showing all three instead of picking one is the app's reason to exist.
+C is ₹3,940/month cheaper on cash. Price commute time at ₹150/hr and **A wins**. And A needs ₹22,500 more on day one than C, which may be the binding constraint regardless. Three lenses, three different winners — showing all three instead of picking one is the app's reason to exist.
+
+Every figure in that table is asserted in `tests/money.test.mjs`, so the code and this document cannot drift apart. (The brainstorm quotes one or two of them a rupee higher: it rounded each line before adding up, the engine adds up and then rounds.)
 
 ## 5. Visit checklist
 

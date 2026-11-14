@@ -1,0 +1,13 @@
+{
+  "name": "point-map",
+  "version": "1.0.0",
+  "description": "Map-first PG tracker with honest cost comparison. No build step and no dependencies — package.json exists only so `node` treats the modules as ESM when running the tests.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node tests/money.test.mjs && node tests/parse.test.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
