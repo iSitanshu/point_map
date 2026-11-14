@@ -1,0 +1,21 @@
+# Local config that may contain your Google Maps API key
+app/config.local.js
+
+# Your own photos and videos — keep the folder, ignore the contents
+media/*
+!media/README.md
+!media/.gitkeep
+
+# Data exports / backups
+backups/
+*.backup.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Dependency dirs (not used today, kept for safety)
+node_modules/
