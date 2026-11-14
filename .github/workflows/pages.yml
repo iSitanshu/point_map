@@ -47,6 +47,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html manifest.webmanifest sw.js _site/
+          touch _site/.nojekyll
           cp -r app _site/
           if [ -d media ]; then cp -r media _site/; fi
           ls -R _site | head -40
