@@ -997,7 +997,14 @@
   .btn--small { padding: 8px 12px; }
   .chip--filter, .status-chip { padding: 7px 12px; }
   .rating__star { font-size: 22px; padding: 2px 3px; }
-  input[type="checkbox"] { width: 19px; height: 19px; }
+
+  /* Scoped deliberately: a blanket input[type=checkbox] rule would also hit
+     the visually-hidden input inside .switch and give it a clickable size. */
+  .checklist__label input[type="checkbox"],
+  .card__compare input[type="checkbox"],
+  .mini-field--check input[type="checkbox"],
+  .setting--check input[type="checkbox"] { width: 19px; height: 19px; }
+
   .checklist__item { grid-template-columns: 1fr; gap: 4px; padding: 3px 0; }
   .control, .control--inline { font-size: 16px; } /* iOS zooms anything smaller */
   .card { padding: 13px 12px 13px 14px; }
