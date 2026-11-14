@@ -27,16 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      # No dependencies to install — plain node:assert (ADR-0003).
+      # No setup-node step: the runner's Node is fine, because the tests have
+      # no dependencies and use only node:assert (ADR-0003).
       - name: Run tests
         run: npm test
 
-      # `enablement: true` turns Pages on the first time, so there is no
-      # setting to click in the repo UI.
+      # ONE-TIME SETUP, required before the first successful deploy:
+      #   repo → Settings → Pages → Source: "GitHub Actions"
+      # `enablement: true` tries to do that automatically, but creating a Pages
+      # site through the API needs permissions the workflow token is not
+      # granted by default ("Resource not accessible by integration"), so the
+      # switch has to be flipped by hand once. Everything after that is
+      # automatic on every push.
       - uses: actions/configure-pages@v5
         with:
           enablement: true

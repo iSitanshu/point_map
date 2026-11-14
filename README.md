@@ -22,7 +22,7 @@ Drop a pin for every PG a broker sends you, store everything you know about it (
 
 **→ https://isitanshu.github.io/point_map/**
 
-Published automatically from this repo, so your laptop doesn't need to be on. Install it to your home screen and it runs full-screen and works with no signal — which is the point, since the moments this app is for happen outside a building, not at a desk.
+Published automatically from this repo, so your laptop doesn't need to be on. (**First time only:** switch Pages on at *Settings → Pages → Source: GitHub Actions*, then re-run the latest workflow — GitHub blocks workflows from enabling Pages themselves. [Details](docs/use-on-your-phone.md).) Install it to your home screen and it runs full-screen and works with no signal — which is the point, since the moments this app is for happen outside a building, not at a desk.
 
 Android: tap **⤓ Install** in the top bar. iPhone: open in Safari → Share → **Add to Home Screen**.
 

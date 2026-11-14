@@ -8,6 +8,17 @@ Every push to `main` runs the tests and redeploys that URL automatically.
 
 ---
 
+## One-time switch to turn the URL on
+
+GitHub will not let a workflow create a Pages site by itself — it returns
+*"Resource not accessible by integration"* — so this has to be done once, by hand:
+
+1. Open **https://github.com/iSitanshu/point_map/settings/pages**
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Go to the **Actions** tab, open the latest *"Test and deploy to GitHub Pages"* run, and press **Re-run jobs**.
+
+Takes about ten seconds. After that every push deploys on its own and you never touch it again. The first deploy takes a minute or two to appear.
+
 ## Install it to your home screen
 
 Once installed it opens full-screen, with no browser chrome, and works with no signal.
