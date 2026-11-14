@@ -15,11 +15,13 @@
 | T-007 | [Compare view + money dashboard + ledger](done/T-007-compare-and-money.md) | ADR-0005, ADR-0008 |
 | T-008 | [WhatsApp paste parser + visit checklist](done/T-008-fast-capture.md) | ADR-0006 |
 | T-010 | [Staleness fade + "still available?" ping](done/T-010-staleness-ping.md) | ADR-0004 |
+| T-016 | [PWA: installable on a phone, offline, auto-deployed](done/T-016-pwa.md) | ADR-0003 |
 
 ## Next
 
 | # | Task | Priority | Est |
 |---|---|---|---|
+| T-015 | [Cloud sync — phone and laptop share one dataset](next/T-015-cloud-sync.md) | **P0** | L |
 | T-009 | [Duplicate-pin merge prompt](next/T-009-duplicate-merge.md) | P1 | S |
 | T-011 | [Read-only share / print view, contacts redacted](next/T-011-share-view.md) | P1 | M |
 | T-012 | [Rent-due reminders via browser notifications](next/T-012-rent-reminders.md) | P1 | M |
@@ -30,8 +32,6 @@
 | # | Task | Priority | Est |
 |---|---|---|---|
 | T-014 | [Commute time via Google Distance Matrix](later/T-014-commute-api.md) | P2 | M |
-| T-015 | [Supabase sync as the canonical store](later/T-015-cloud-sync.md) | P2 | L |
-| T-016 | [PWA: installable, offline tiles](later/T-016-pwa.md) | P2 | M |
 | T-017 | [Places autocomplete for addresses](later/T-017-places-autocomplete.md) | P2 | S |
 
 ## Not doing
@@ -62,7 +62,8 @@ Recorded so the same ideas are not re-litigated. Full reasoning in [brainstorm �
 
 | Risk | Status |
 |---|---|
-| Data loss (localStorage cleared) | Mitigated — one-key export, backup age in the top bar, prompt every 10th write. Not eliminated; T-015 is the real fix. |
+| Data loss (localStorage cleared) | Mitigated — one-key export, backup age in the top bar, prompt every 10th write. **Not eliminated**, and now sharper: phone storage is evicted more aggressively than laptop storage. T-015 is the real fix. |
+| Phone and laptop hold different data | **Open, and now the top priority.** Export/import is the only bridge today. T-015. |
 | Field fatigue → abandonment | Mitigated — one required field, 7 money inputs, completeness ring instead of validation. Watch whether records stay sparse. |
 | Abandonment after move-in | Mitigated — ledger shipped in v1 (ADR-0008). T-012 is the follow-through. |
 | Stale PG listings | Mitigated — pins fade past 21 days, a one-tap WhatsApp "still available?" and a "confirm still listed" action (T-010). |

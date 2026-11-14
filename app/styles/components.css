@@ -952,7 +952,7 @@
 
 .toast-root {
   position: fixed;
-  bottom: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 200;
@@ -988,6 +988,19 @@
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
+}
+
+/* Touch targets. A 24px icon button is fine with a mouse and a miss with a
+   thumb, so everything interactive grows on a touch device. */
+@media (pointer: coarse) {
+  .icon-btn { width: 34px; height: 34px; }
+  .btn--small { padding: 8px 12px; }
+  .chip--filter, .status-chip { padding: 7px 12px; }
+  .rating__star { font-size: 22px; padding: 2px 3px; }
+  input[type="checkbox"] { width: 19px; height: 19px; }
+  .checklist__item { grid-template-columns: 1fr; gap: 4px; padding: 3px 0; }
+  .control, .control--inline { font-size: 16px; } /* iOS zooms anything smaller */
+  .card { padding: 13px 12px 13px 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

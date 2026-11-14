@@ -18,7 +18,17 @@ Drop a pin for every PG a broker sends you, store everything you know about it (
 └──────────────┴──────────────────────────────────┴───────────┘
 ```
 
-## Run it
+## Use it on your phone
+
+**→ https://isitanshu.github.io/point_map/**
+
+Published automatically from this repo, so your laptop doesn't need to be on. Install it to your home screen and it runs full-screen and works with no signal — which is the point, since the moments this app is for happen outside a building, not at a desk.
+
+Android: tap **⤓ Install** in the top bar. iPhone: open in Safari → Share → **Add to Home Screen**.
+
+Your data stays in each device's own browser, so phone and laptop are separate until you export/import. Full detail: [docs/use-on-your-phone.md](docs/use-on-your-phone.md).
+
+## Run it locally
 
 No build step, no npm install, no backend. It is plain HTML + ES modules, so it only needs to be served over `http://` (not opened as a `file://` path).
 
@@ -48,12 +58,14 @@ The app works immediately on a free OpenStreetMap base map. To switch to Google 
 - Flexible by design: a PG stores rent/deposit/food/rules; a park or a mess like *Dabbu Veg* stores opening hours, phone and a video walkthrough. Same app, different `kind`.
 - Photos and videos: paste a YouTube/Drive link, reference a file you dropped in `media/`, or upload straight from your phone (stored in the browser's IndexedDB).
 - Ratings on the things that actually matter: safety, cleanliness, food, water pressure, landlord, mobile signal.
-- A **visit checklist** so you ask the same 12 questions at every PG instead of remembering half of them.
+- A **visit checklist** so you ask the same 10 questions at every PG instead of remembering half of them.
 
 **Money — the main point**
-- *True monthly cost* = rent + all bills + food + commute + (brokerage & setup spread over your expected stay) + the interest you lose on a locked-up deposit.
-- *Cash needed on day one* — deposit + brokerage + advance rent + setup. The number that actually decides whether you can move in.
-- *Total cost of an 11-month stay*, and net cost after the deposit comes back.
+- *True monthly cost* = rent + all bills + food + commute + brokerage and setup spread over your expected stay. Built from **seven inputs**, and it shows you every line that went into it.
+- *Cash needed on day one* — deposit + brokerage + advance rent + setup. Frequently the number that actually decides it: the cheapest place per month can be the one you can't afford to move into.
+- **Three lenses that are allowed to disagree** — pure cash, commute time priced at your own ₹/hour, and a privacy premium for a single room. Across three realistic Mumbai options the winner changes three times. Showing that is the point.
+- Blank means *unknown*, never ₹0 — an incomplete record shows a range and `4 of 7 known`, not a falsely precise total.
+- *Net cost of the whole stay* after the deposit comes back, and the exit cost if you leave inside a lock-in.
 - Budget line: set your monthly budget once, every option is shown as under/over it.
 - **Ledger**: after you move in, log each payment (rent, electricity, water can, wifi). See budgeted vs actually paid, what's still due, and whether your deposit was refunded.
 - Export to CSV to send to a parent, or compare two or three shortlisted options side by side.
@@ -75,13 +87,17 @@ The app works immediately on a free OpenStreetMap base map. To switch to Google 
 | `app/ui/` | Sidebar list, detail drawer, add/edit form, compare table, money dashboard |
 | `app/data/seed.js` | Example locations so the app is never empty on first run |
 | `media/` | Drop your own photos/videos here and reference them by filename |
+| `sw.js`, `manifest.webmanifest` | Offline support and home-screen install |
+| `tools/make-icons.py` | Regenerates the app icons — stdlib only |
+| `tests/` | `npm test` — 52 assertions over the cost engine and parser |
 | `docs/` | Product spec, data model, brainstorm, setup guides |
 | `decisions/` | Architecture Decision Records — *why* each choice was made |
 | `tasks/` | The task board: `next/`, `later/`, `done/` |
 
 ## Where to start reading
 
-1. [`docs/product-spec.md`](docs/product-spec.md) — what is being built and for whom
-2. [`docs/brainstorm.md`](docs/brainstorm.md) — scenario exploration, money modelling options
-3. [`decisions/`](decisions/) — the seven decisions that shaped the build
-4. [`tasks/BOARD.md`](tasks/BOARD.md) — what's done and what's next
+1. [`docs/use-on-your-phone.md`](docs/use-on-your-phone.md) — install it, and how your data moves between devices
+2. [`docs/product-spec.md`](docs/product-spec.md) — what is being built and for whom
+3. [`docs/brainstorm.md`](docs/brainstorm.md) — scenario exploration, money modelling options
+4. [`decisions/`](decisions/) — the eight decisions that shaped the build
+5. [`tasks/BOARD.md`](tasks/BOARD.md) — what's done, what's next, and what is deliberately not being built

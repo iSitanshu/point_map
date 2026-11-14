@@ -1,0 +1,59 @@
+name: Test and deploy to GitHub Pages
+
+# Every push to main runs the cost-engine tests and, if they pass, publishes
+# the app. The published URL is what makes the phone work without the laptop.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # No dependencies to install — plain node:assert (ADR-0003).
+      - name: Run tests
+        run: npm test
+
+      # `enablement: true` turns Pages on the first time, so there is no
+      # setting to click in the repo UI.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      # Stage only the app. docs/, decisions/ and tasks/ stay in the repo where
+      # they are readable on GitHub, rather than being served as a website.
+      - name: Stage the site
+        run: |
+          mkdir -p _site
+          cp index.html manifest.webmanifest sw.js _site/
+          cp -r app _site/
+          if [ -d media ]; then cp -r media _site/; fi
+          ls -R _site | head -40
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
   <meta name="description" content="Map-first tracker for PG hunting: pins, descriptions, photos, videos and the true monthly cost of every option.">
   <meta name="color-scheme" content="light dark">
   <title>point map — PG & place tracker</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="icon" href="app/icons/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="app/icons/apple-touch-icon.png">
+
+  <!-- Installable on a phone home screen; works with no signal. -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#1d4ed8">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="point map">
   <link rel="stylesheet" href="app/styles/base.css">
   <link rel="stylesheet" href="app/styles/components.css">
 </head>
@@ -27,6 +36,8 @@
       </nav>
 
       <div class="topbar__right">
+        <span class="chip chip--warn" id="offline-chip" title="No connection — your data is safe, only map tiles are affected" hidden>offline</span>
+        <button class="chip chip--quiet" type="button" id="install-btn" title="Install to your home screen" hidden>⤓ Install</button>
         <span class="chip chip--quiet" id="provider-chip" title="Which map is being used"></span>
         <button class="chip chip--quiet" type="button" id="backup-chip"></button>
         <button class="btn btn--primary" type="button" id="add-btn" title="Add a location (N)">

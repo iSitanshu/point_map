@@ -1,8 +1,14 @@
 # T-015 — Supabase sync as the canonical store
 
-**Status:** later · **Priority:** P2 · **Estimate:** L · **Governed by:** ADR-0002
+**Status:** next · **Priority:** P0 · **Estimate:** L · **Governed by:** ADR-0002
 
-## Why
+## Why this is now P0
+
+ADR-0002 said to revisit this "if the user starts using two devices in the same week". That happened immediately: the app is installed on a phone (T-016) *and* used on a laptop, so there are now two divergent copies of the research and export/import is the only bridge between them.
+
+Phone storage is also the more fragile of the two — iOS evicts data from sites that haven't been opened in a while, which is exactly the failure mode that loses a month of PG hunting.
+
+The original reasoning:
 
 The real fix for the risk ADR-0002 could only mitigate. Today a cleared browser profile with no recent export loses the research, and laptop → phone is a manual export/import. One row in a free-tier Postgres removes both.
 
@@ -26,4 +32,4 @@ Resist normalising into `points`, `ledger`, `media` tables. One JSON blob is wha
 
 The anon key sits in the client, so RLS by `user_key` is the only thing protecting the row — a guessable key means someone else's data is readable. Use `crypto.randomUUID()`, never a sequence.
 
-Do this *before* a second device becomes a habit, not after.
+Do this *before* a second device becomes a habit, not after — that moment has already arrived.

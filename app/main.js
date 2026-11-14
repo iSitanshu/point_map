@@ -32,6 +32,8 @@ const nodes = {
   backupChip: qs("#backup-chip"),
   addBtn: qs("#add-btn"),
   compareBadge: qs("#compare-badge"),
+  installBtn: qs("#install-btn"),
+  offlineChip: qs("#offline-chip"),
 };
 
 let map = null;
@@ -275,10 +277,82 @@ function runNudges() {
   }
 }
 
+/* --------------------------------------------------------------------- pwa -- */
+
+/**
+ * Installing to a phone home screen and working with no signal.
+ *
+ * The data layer was always offline — this makes the *page* and the map tiles
+ * survive a dead zone too, which is exactly where PG notes get written.
+ */
+function setupPWA() {
+  const canUseSW = "serviceWorker" in navigator
+    && (location.protocol === "https:" || location.hostname === "localhost");
+
+  if (canUseSW) {
+    navigator.serviceWorker.register("sw.js").then((registration) => {
+      registration.addEventListener("updatefound", () => {
+        const incoming = registration.installing;
+        incoming?.addEventListener("statechange", () => {
+          // A waiting worker with a page already controlled means this is an
+          // update, not a first install — worth telling the user about.
+          if (incoming.state !== "installed" || !navigator.serviceWorker.controller) return;
+          toast("A new version is ready.", {
+            timeout: 0,
+            action: { label: "Reload", onClick: () => incoming.postMessage("SKIP_WAITING") },
+          });
+        });
+      });
+    }).catch((err) => console.warn("Service worker registration failed", err));
+
+    let reloading = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (reloading) return; // the event can fire more than once
+      reloading = true;
+      location.reload();
+    });
+  }
+
+  /* Chrome/Android offer an install prompt we can trigger on a real click.
+     iOS has no equivalent — Safari's Share → Add to Home Screen is manual,
+     which docs/use-on-your-phone.md explains. */
+  let deferredPrompt = null;
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    nodes.installBtn.hidden = false;
+  });
+
+  nodes.installBtn?.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    nodes.installBtn.hidden = true;
+    if (outcome === "accepted") toast("Installed — open it from your home screen");
+  });
+
+  window.addEventListener("appinstalled", () => {
+    nodes.installBtn.hidden = true;
+  });
+
+  const syncOnlineState = () => {
+    const offline = !navigator.onLine;
+    nodes.offlineChip.hidden = !offline;
+    document.body.classList.toggle("is-offline", offline);
+  };
+
+  window.addEventListener("online", syncOnlineState);
+  window.addEventListener("offline", syncOnlineState);
+  syncOnlineState();
+}
+
 /* -------------------------------------------------------------------- boot -- */
 
 async function boot() {
   store.load();
+  setupPWA();
 
   nodes.tabs.addEventListener("click", (event) => {
     const view = event.target.closest(".tab")?.dataset.view;
