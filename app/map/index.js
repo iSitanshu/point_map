@@ -12,7 +12,8 @@ import { config } from "../config.js";
 import { createOSMProvider } from "./osm.js";
 import { createGoogleProvider } from "./google.js";
 import {
-  TIERS, tierForZoom, buildClusters, renderPin, renderCluster, renderWorkPin, spreadOverlaps,
+  TIERS, tierForZoom, buildClusters, renderPin, renderCluster, renderWorkPin,
+  renderStation, renderMyLocation, spreadOverlaps,
 } from "./marker-view.js";
 import { hasLocation, isStale } from "../model.js";
 import { debounce } from "../lib/util.js";
@@ -25,6 +26,7 @@ const withinBounds = (point, bounds) => (
 export async function createMapController({
   container,
   settings = {},
+  initialView = null,
   onSelect,
   onMapClick,
   onViewportChange,
@@ -36,6 +38,8 @@ export async function createMapController({
 
   let currentSettings = settings;
   let currentPoints = [];
+  let currentStations = [];
+  let myLocation = null;
   let selectedId = null;
 
   /* The viewport handler is installed before the provider exists, so it has to
@@ -47,8 +51,10 @@ export async function createMapController({
 
   const initOptions = {
     container,
-    center: { lat: config.city.lat, lng: config.city.lng },
-    zoom: config.city.zoom,
+    center: initialView
+      ? { lat: initialView.lat, lng: initialView.lng }
+      : { lat: config.city.lat, lng: config.city.lng },
+    zoom: initialView?.zoom ?? config.city.zoom,
     onMapClick,
     onViewportChange: handleViewport,
   };
@@ -134,6 +140,31 @@ export async function createMapController({
       }
     }
 
+    // Stations sit underneath everything: context, not content. Below zoom 12
+    // they would be unreadable clutter over a whole city.
+    if (currentSettings.showStations !== false && zoom >= 12 && currentStations.length) {
+      for (const station of currentStations) {
+        if (bounds && !withinBounds(station, bounds)) continue;
+        renderables.push({
+          key: station.id,
+          lat: station.lat,
+          lng: station.lng,
+          element: renderStation(station, { zoom }),
+          zIndex: 1,
+        });
+      }
+    }
+
+    if (myLocation) {
+      renderables.push({
+        key: "my-location",
+        lat: myLocation.lat,
+        lng: myLocation.lng,
+        element: renderMyLocation(),
+        zIndex: 30,
+      });
+    }
+
     if (currentSettings.workPin) {
       renderables.push({
         key: "work-pin",
@@ -182,6 +213,16 @@ export async function createMapController({
     get providerName() { return provider.name; },
     get providerLabel() { return provider.label; },
     get providerNote() { return providerNote; },
+
+    setStations(stations) {
+      currentStations = stations || [];
+      draw();
+    },
+
+    setMyLocation(location) {
+      myLocation = location;
+      draw();
+    },
 
     setData(points, options = {}) {
       currentPoints = points || [];

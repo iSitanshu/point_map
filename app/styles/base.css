@@ -15,6 +15,11 @@ body {
   overscroll-behavior: none;
 }
 
+/* The UA's `[hidden] { display: none }` has zero specificity, so any class
+   that sets `display` silently beats it — which left the offline chip, the
+   install button and the compare badge permanently visible. */
+[hidden] { display: none !important; }
+
 h1, h2, h3, h4, p, dl, dd, ul, figure { margin: 0; }
 ul { padding: 0; list-style: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
@@ -84,13 +89,29 @@ img, video, iframe { max-width: 100%; display: block; }
 /* ------------------------------------------------------------------ layout -- */
 
 /* The safe-area insets are 0 everywhere except an installed app on a notched
-   phone, where the status bar would otherwise sit on top of the top bar. */
+   phone, where the status bar would otherwise sit on top of the top bar.
+ *
+ * `grid-template-columns: minmax(0, 1fr)` is load-bearing, not cosmetic: a grid
+ * item's default `min-width: auto` refuses to shrink below its content's
+ * min-content width. Without it the single implicit column sized itself to the
+ * top bar's nowrap content (~737px) and the whole app overflowed sideways on a
+ * phone, putting every tap target somewhere other than where it appeared. */
 .app {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)) minmax(0, 1fr);
   height: 100vh;
   height: 100dvh;
+  overflow: hidden;
 }
+
+/* Same reasoning one level down — every flex and grid child that holds
+   shrinkable content needs permission to shrink. */
+.topbar,
+.workspace,
+.sidebar,
+.stage,
+.view { min-width: 0; }
 
 .topbar {
   display: flex;
@@ -157,8 +178,6 @@ img, video, iframe { max-width: 100%; display: block; }
   position: relative;
 }
 
-.workspace[hidden] { display: none; }
-
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -194,8 +213,6 @@ img, video, iframe { max-width: 100%; display: block; }
   z-index: 20;
 }
 
-.drawer[hidden] { display: none; }
-
 .view {
   grid-row: 2;
   min-height: 0;
@@ -203,8 +220,6 @@ img, video, iframe { max-width: 100%; display: block; }
   padding: 22px max(26px, env(safe-area-inset-right, 0px)) calc(64px + env(safe-area-inset-bottom, 0px)) max(26px, env(safe-area-inset-left, 0px));
   background: var(--bg);
 }
-
-.view[hidden] { display: none; }
 
 .map-hint,
 .map-status {
@@ -223,10 +238,9 @@ img, video, iframe { max-width: 100%; display: block; }
   text-overflow: ellipsis;
 }
 
-.map-hint { top: 12px; border-color: var(--accent); }
+.map-hint { bottom: 52px; border-color: var(--accent); font-weight: 600; }
 .map-status { bottom: 14px; color: var(--muted); }
 .map-status:empty { display: none; }
-.map-hint[hidden] { display: none; }
 
 body.is-picking .map { cursor: crosshair; }
 
@@ -256,36 +270,58 @@ body.is-picking .map { cursor: crosshair; }
 }
 
 @media (max-width: 860px) {
-  :root { --topbar-h: 48px; }
+  :root { --topbar-h: 50px; }
 
   /* Keep the safe-area insets — a plain `padding: 0 10px` here would put the
      top bar back under the status bar on an installed app. */
   .topbar {
-    gap: 8px;
+    gap: 6px;
     padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px))
              0 max(10px, env(safe-area-inset-left, 0px));
   }
 
   .topbar__name { display: none; }
-  .tab { padding: 5px 10px; }
+  .topbar .topbar__desk { display: none; }  /* these live in Money → Your data */
+  .topbar__right { gap: 6px; }
+  .tabs { flex: 1; justify-content: center; }
+  .tab { padding: 7px 12px; flex: 1; justify-content: center; }
+  .btn--add .btn__text { display: none; }
+  .btn--add { padding: 8px 12px; font-size: 17px; line-height: 1; }
 
-  /* Phone: the list sits above the map and the drawer takes the screen. */
+  /* Phone: map on top so the area search sits under your thumb, list below.
+     Both are DOM-ordered the other way round for desktop, hence `order`. */
   .workspace {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 40%) minmax(0, 60%);
+    grid-template-rows: minmax(0, 52%) minmax(0, 48%);
   }
 
-  .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
+  .stage { order: 1; }
+  .sidebar { order: 2; border-right: 0; border-top: 1px solid var(--border); }
 
+  /* The drawer was a full-screen takeover with one small ✕ — once it opened
+     there was no way back to the map, and taps meant for the map hit the
+     drawer instead. A bottom sheet keeps the map visible and tappable. */
   .drawer {
     position: fixed;
-    inset: calc(var(--topbar-h) + env(safe-area-inset-top, 0px)) 0 0 0;
+    inset: auto 0 0 0;
+    top: auto;
     width: auto;
+    max-height: 66dvh;
     border-left: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 18px 18px 0 0;
+    padding: 0 14px calc(28px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.3);
+    animation: sheet-up 0.18s ease-out;
   }
 
   .view {
     padding: 16px max(14px, env(safe-area-inset-right, 0px))
              calc(56px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
   }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(16px); opacity: 0.6; }
+  to { transform: none; opacity: 1; }
 }

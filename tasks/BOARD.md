@@ -16,6 +16,7 @@
 | T-008 | [WhatsApp paste parser + visit checklist](done/T-008-fast-capture.md) | ADR-0006 |
 | T-010 | [Staleness fade + "still available?" ping](done/T-010-staleness-ping.md) | ADR-0004 |
 | T-016 | [PWA: installable on a phone, offline, auto-deployed](done/T-016-pwa.md) | ADR-0003 |
+| T-018 | [Phone layout fixes, area search, stations, my location](done/T-018-mobile-usability.md) | ADR-0004 |
 
 ## Next
 

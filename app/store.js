@@ -36,6 +36,7 @@ const state = {
   search: "",
   sort: "tmc",
   filters: {
+    limitToArea: true,
     statuses: [],
     kinds: [],
     maxTMC: null,
@@ -160,6 +161,22 @@ function commit(mutator, reason = "change") {
   notify(reason);
 }
 
+/**
+ * Remember where the map was, without counting it as a change.
+ * Panning is not editing, and it must not trigger the backup nag or a repaint.
+ */
+export function rememberView(view) {
+  state.settings.lastView = view;
+  save();
+}
+
+export function setSearchArea(area) {
+  commit(() => {
+    state.settings.searchArea = area;
+    state.filters.limitToArea = true;
+  }, "area");
+}
+
 /** Change session-only UI state: notifies without touching storage. */
 export function setUI(patch, reason = "ui") {
   Object.assign(state, patch);
@@ -173,6 +190,7 @@ export function setFilters(patch) {
 
 export function resetFilters() {
   state.filters = {
+    limitToArea: true,
     statuses: [], kinds: [], maxTMC: null, gender: "",
     foodIncluded: null, maxSharing: null, tags: [], maxKmFromWork: null,
   };
@@ -221,6 +239,18 @@ export function removePoint(id) {
     state.points = state.points.filter((point) => point.id !== id);
     if (state.selectedId === id) state.selectedId = null;
     state.compareIds = state.compareIds.filter((cid) => cid !== id);
+  }, "remove");
+}
+
+/** How many of the first-run examples are still around. */
+export const demoCount = () => state.points.filter((point) => point.demo).length;
+
+/** Clear only the examples, leaving anything you added untouched. */
+export function clearDemoData() {
+  commit(() => {
+    state.points = state.points.filter((point) => !point.demo);
+    state.selectedId = null;
+    state.compareIds = state.compareIds.filter((id) => pointById(id));
   }, "remove");
 }
 
@@ -344,6 +374,16 @@ export function visiblePoints() {
     if (filters.maxKmFromWork !== null) {
       const km = distanceFromWork(point, settings);
       if (km !== null && km > filters.maxKmFromWork) return false;
+    }
+
+    // The area you are hunting in: everything outside it is noise while you
+    // are looking at one locality, so it is hidden rather than ranked low.
+    if (settings.searchArea && filters.limitToArea && hasLocation(point)) {
+      const km = haversineKm(
+        { lat: point.lat, lng: point.lng },
+        { lat: settings.searchArea.lat, lng: settings.searchArea.lng },
+      );
+      if (km !== null && km > (num(settings.searchRadiusKm) ?? 5)) return false;
     }
     if (needle && !pointSearchText(point).includes(needle)) return false;
     return true;

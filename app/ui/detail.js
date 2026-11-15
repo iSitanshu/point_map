@@ -379,6 +379,15 @@ export function renderDetail(container, point, { onEdit, onFocus } = {}) {
   const risk = hasLockInRisk(point) ? exitCost(point, 3, settings) : null;
 
   container.replaceChildren(
+    // The grab handle only shows on a phone, where the drawer is a bottom
+    // sheet; dragging or tapping it closes.
+    el("button", {
+      class: "drawer__grip",
+      type: "button",
+      "aria-label": "Close details",
+      on: { click: () => store.select(null) },
+    }),
+
     el("header", { class: "drawer__head" }, [
       el("div", { class: "drawer__title-row" }, [
         el("span", { class: "drawer__kind", text: kind.icon, title: kind.label }),

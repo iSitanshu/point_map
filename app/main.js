@@ -17,6 +17,8 @@ import { renderDetail } from "./ui/detail.js";
 import { renderCompare } from "./ui/compare.js";
 import { renderMoney } from "./ui/money.js";
 import { openPointForm } from "./ui/form.js";
+import { renderMapControls } from "./ui/map-controls.js";
+import { loadStations } from "./lib/geo.js";
 import { toast } from "./ui/toast.js";
 
 const nodes = {
@@ -34,6 +36,7 @@ const nodes = {
   compareBadge: qs("#compare-badge"),
   installBtn: qs("#install-btn"),
   offlineChip: qs("#offline-chip"),
+  mapControls: qs("#map-controls"),
 };
 
 let map = null;
@@ -180,6 +183,13 @@ function renderAll(reason) {
     selectedId: state.selectedId,
     settings: state.settings,
   });
+
+  if (["boot", "load", "area", "settings", "import"].includes(reason)) {
+    renderMapControls(nodes.mapControls, {
+      map,
+      onAreaChange: () => renderAll("area-applied"),
+    });
+  }
 
   renderView();
 
@@ -383,13 +393,31 @@ async function boot() {
     });
   });
 
+  /* Opening on a whole-country view was the single worst first impression —
+     the map now opens where you were, or on the area you are hunting in. */
+  const settings = store.getSettings();
+  const initialView = settings.lastView
+    || (settings.searchArea && { ...settings.searchArea, zoom: 14 })
+    || null;
+
   try {
     map = await createMapController({
       container: qs("#map"),
-      settings: store.getSettings(),
+      settings,
+      initialView,
       onSelect: (id) => store.select(id),
       onMapClick: handleMapClick,
       onViewportChange: () => {
+        // Remember the position so the next visit opens here. Saved quietly —
+        // panning is not an edit and must not trigger the backup nag.
+        const centre = map?.getBounds();
+        if (centre) {
+          store.rememberView({
+            lat: (centre.north + centre.south) / 2,
+            lng: (centre.east + centre.west) / 2,
+            zoom: map.getZoom(),
+          });
+        }
         // Only the sidebar cares, and only when it is filtered to the viewport.
         if (store.getState().viewportOnly) {
           renderSidebar(nodes.sidebar, {
@@ -422,7 +450,13 @@ async function boot() {
   store.subscribe((_, reason) => renderAll(reason));
   renderAll("boot");
 
-  if (store.getPoints().some((point) => num(point.lat) !== null)) map?.fitAll();
+  /* Stations are context, fetched once and cached for two months. A failure is
+     silent: the map is still perfectly usable without them. */
+  if (store.getSettings().showStations !== false) {
+    loadStations().then((stations) => {
+      if (stations.length) map?.setStations(stations);
+    }).catch(() => {});
+  }
 
   setTimeout(runNudges, 1200);
 }

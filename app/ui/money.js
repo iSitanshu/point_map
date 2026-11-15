@@ -356,6 +356,26 @@ function dataPanel() {
       text: "Uploaded photos and videos are not inside the JSON backup — download them separately "
         + "if you are moving to another browser or laptop.",
     }),
+    store.demoCount() > 0 && el("div", { class: "button-row" }, [
+      el("button", {
+        class: "btn btn--small",
+        type: "button",
+        text: `Remove the ${store.demoCount()} example places`,
+        on: {
+          click: async () => {
+            const ok = await confirmDialog({
+              title: "Remove the examples?",
+              body: "Only the places marked as examples are removed. Anything you added yourself stays.",
+              confirmLabel: "Remove examples",
+            });
+            if (!ok) return;
+            store.clearDemoData();
+            toast("Examples removed — the map is yours now");
+          },
+        },
+      }),
+    ]),
+
     el("div", { class: "button-row" }, [
       el("button", {
         class: "btn btn--small btn--danger-text", type: "button", text: "Clear all data",

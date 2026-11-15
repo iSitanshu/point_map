@@ -161,6 +161,30 @@ export function renderCluster(cluster, { settings = {} } = {}) {
   ]);
 }
 
+/**
+ * A rail or metro station. Deliberately quiet: stations are the backdrop you
+ * judge a PG against, not something to click. Name only once you are zoomed in
+ * far enough for it to be legible.
+ */
+export function renderStation(station, { zoom = 13 } = {}) {
+  const showName = zoom >= 14;
+  return el("div", {
+    class: ["station", station.metro && "station--metro", showName && "station--named"],
+    title: `${station.name} ${station.metro ? "metro" : "railway"} station`,
+  }, [
+    el("span", { class: "station__icon", text: station.metro ? "Ⓜ" : "🚆" }),
+    showName && el("span", { class: "station__name", text: station.name }),
+  ]);
+}
+
+/** Where you are now. Pulsing, so it is never confused with a saved place. */
+export function renderMyLocation() {
+  return el("div", { class: "me", title: "Your current location" }, [
+    el("span", { class: "me__pulse" }),
+    el("span", { class: "me__dot" }),
+  ]);
+}
+
 /** The work pin — a different shape so it never reads as an option. */
 export function renderWorkPin(label = "Work") {
   return el("div", { class: "pin pin--work", title: label }, [

@@ -110,6 +110,10 @@ export const DEFAULT_SETTINGS = {
   showDepositOpportunity: false,
   pillCap: 25,
   showRejected: false,
+  showStations: true,
+  searchArea: null,      // {label, lat, lng} — the area you are hunting in
+  searchRadiusKm: 5,
+  lastView: null,        // {lat, lng, zoom} — so the map reopens where you left it
   staleAfterDays: 21,
   workPin: null,
   mapProvider: null,

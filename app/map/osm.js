@@ -42,10 +42,13 @@ export async function createOSMProvider({ container, center, zoom, onMapClick, o
   const map = L.map(container, {
     center: [center.lat, center.lng],
     zoom,
-    zoomControl: true,
+    zoomControl: false,
     attributionControl: true,
     worldCopyJump: true,
+    tap: false, // Leaflet's synthetic tap double-fires clicks on some phones
   });
+
+  L.control.zoom({ position: "bottomright" }).addTo(map);
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,

@@ -37,11 +37,11 @@
 
       <div class="topbar__right">
         <span class="chip chip--warn" id="offline-chip" title="No connection — your data is safe, only map tiles are affected" hidden>offline</span>
-        <button class="chip chip--quiet" type="button" id="install-btn" title="Install to your home screen" hidden>⤓ Install</button>
-        <span class="chip chip--quiet" id="provider-chip" title="Which map is being used"></span>
-        <button class="chip chip--quiet" type="button" id="backup-chip"></button>
-        <button class="btn btn--primary" type="button" id="add-btn" title="Add a location (N)">
-          + Add
+        <button class="chip chip--quiet topbar__desk" type="button" id="install-btn" title="Install to your home screen" hidden>⤓ Install</button>
+        <span class="chip chip--quiet topbar__desk" id="provider-chip" title="Which map is being used"></span>
+        <button class="chip chip--quiet topbar__desk" type="button" id="backup-chip"></button>
+        <button class="btn btn--primary btn--add" type="button" id="add-btn" title="Add a location (N)">
+          <span aria-hidden="true">+</span><span class="btn__text"> Add</span>
         </button>
       </div>
     </header>
@@ -51,6 +51,7 @@
 
       <section class="stage">
         <div class="map" id="map" role="application" aria-label="Map of saved locations"></div>
+        <div class="map-controls" id="map-controls"></div>
         <div class="map-hint" id="map-hint" hidden></div>
         <div class="map-status" id="map-status"></div>
         <noscript>
