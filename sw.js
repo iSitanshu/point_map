@@ -16,7 +16,7 @@
  * (ADR-0003 names this as the cost of having no build step.)
  */
 
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `point-map-shell-${VERSION}`;
 const TILE_CACHE = "point-map-tiles";
 const VENDOR_CACHE = "point-map-vendor";
@@ -49,6 +49,8 @@ const SHELL = [
   "app/ui/media-panel.js",
   "app/ui/ledger-panel.js",
   "app/ui/toast.js",
+  "app/ui/map-controls.js",
+  "app/lib/geo.js",
   "app/data/seed.js",
   "app/styles/base.css",
   "app/styles/components.css",
